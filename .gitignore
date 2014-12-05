@@ -1,2 +1,4 @@
 *~
 *.o
+reads.fasta
+reads.edges
