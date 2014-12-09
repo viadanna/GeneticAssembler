@@ -9,17 +9,26 @@ import sys
 
 
 def greedly(edges):
+    vertices = len(set([e[0] for e in edges]))
     results, weigth = edges[0][0:2], edges[0][2]
     while True:
         found = False
         for e in edges:
-            if e[0] in results or e[1] in results:
+            # Search valid edge with highest weigth
+            if e[0] != results[-1] or e[1] in results:
                 continue
             results.append(e[1])
             weigth += e[2]
-        if not found:
+            found = True
             break
-    return results, weigth
+        if len(results) == vertices:
+            # Full genome assembled
+            return results, weigth, None
+        if not found:
+            # Should start another contig instead
+            return results, weigth, [e for e in edges
+                                     if e[0] not in results
+                                     and e[1] not in results]
 
 
 if __name__ == '__main__':
@@ -40,10 +49,14 @@ if __name__ == '__main__':
     else:
         g = open(args.output, 'wb')
 
-    edges = [map(int, e.split(' ')) for e in f.readlines()]
-    path, weigth = greedly(sorted(edges, key=itemgetter(2), reverse=True))
+    edges, paths = [map(int, e.split(' ')) for e in f.readlines()], []
 
-    g.write(str(path))
+    while edges is not None:
+        path, weigth, edges = greedly(
+            sorted(edges, key=itemgetter(2), reverse=True))
+        paths.append((path, weigth))
+
+    g.write(str(paths))
 
     if args.Edges != '-':
         f.close()
