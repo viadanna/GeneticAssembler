@@ -24,7 +24,7 @@ def greedly(edges):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Greedy algorithm for SCS')
-    parser.add_argument('Edges', type=unicode,
+    parser.add_argument('Edges', type=unicode, nargs='?', default='-',
                         help='Edges file or - for stdin')
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')

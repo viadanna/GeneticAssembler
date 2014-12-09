@@ -10,7 +10,10 @@ import argparse
 import sys
 
 base_pair = {'A': 'C', 'C': 'A', 'G': 'T', 'T': 'G'}
-reverse_strip = lambda x: "".join([base_pair[b] for b in reversed(x)])
+
+
+def reverse_strip(x):
+    return Seq("".join([base_pair[b] for b in reversed(x)]))
 
 
 def split_reads(seqs, min_size, max_size, coverage, error, reversals):
@@ -24,14 +27,15 @@ def split_reads(seqs, min_size, max_size, coverage, error, reversals):
         read = seq[start:start+size].upper()
         if reversals > 0 and randint(0, 99) < reversals:
             read = Seq(reverse_strip(read))
-        read = Seq("".join((b if randint(0, 99) < error
-                        else choice(('A', 'C', 'G', 'T', '')) for b in read)))
+        if error > 0:
+            read = Seq("".join((b if randint(0, 99) < error
+                else choice(('A', 'C', 'G', 'T', '')) for b in read)))
         yield SeqRecord(read, 'fragment_%i' % i, '', '')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Splits a RefSeq into reads')
-    parser.add_argument('RefSeq', type=unicode,
+    parser.add_argument('RefSeq', type=unicode, nargs='?', default='-',
                         help='Reference file or - for stdin')
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')
