@@ -57,6 +57,7 @@ if __name__ == '__main__':
         paths.append((path, weigth))
 
     g.write(str(paths))
+    g.write('\n')
 
     if args.Edges != '-':
         f.close()

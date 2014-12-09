@@ -7,5 +7,7 @@ fi
 python src/sequencer.py -o reads.fasta < data/genome.fasta
 >&2 echo "Building Overlap Graph edges from Reads"
 ./grapher < reads.fasta > reads.edges
->&2 echo "Building Hamiltonian path from OG"
+>&2 echo "Building Hamiltonian path using greedy algorithm"
 python src/greedy.py < reads.edges
+>&2 echo "Building Hamiltonian path using genetic algorithm"
+python src/genetic.py -v < reads.edges
