@@ -40,9 +40,9 @@ if __name__ == '__main__':
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')
     parser.add_argument('--min', dest='min_size', action='store', default=800,
-                        help='Minimum read length')
+                        type=int, help='Minimum read length')
     parser.add_argument('--max', dest='max_size', action='store', default=900,
-                        help='Maximum read length')
+                        type=int, help='Maximum read length')
     parser.add_argument('--coverage', type=float, action='store', default=11,
                         help='Desired coverage of given RefSeq')
     parser.add_argument('--error', type=float, action='store', default=0,
