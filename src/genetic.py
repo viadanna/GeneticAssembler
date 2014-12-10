@@ -16,9 +16,13 @@ def genetic(edges, father, mother, random_index=2):
     results, weight = starting[0:2], starting[2]
     while True:
         vertice = results[-1]
-        possible = [e for e in
-                    [father.get(vertice)] + [mother.get(vertice)] + edges
-                    if e and e[0] == vertice and e[1] not in results]
+        possible = [e for e in [father.get(vertice)] + [mother.get(vertice)] if e]
+        if len(possible) < random_index:
+            for e in edges:
+                if e[0] == vertice and e[1] not in results:
+                    possible.append(e)
+                if len(possible) == random_index:
+                    break
         if len(possible) == 0:
             # Should start another contig
             return results, weight, [e for e in edges
