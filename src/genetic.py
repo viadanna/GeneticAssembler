@@ -10,7 +10,7 @@ import argparse
 import sys
 
 
-def genetic(edges, father, mother, random_index=2):
+def genetic(edges, father, mother, cutoff):
     """
     Builds hamiltonian path for the given weigthed edges
     Will choose a random edge in given list and parents if given
@@ -18,28 +18,26 @@ def genetic(edges, father, mother, random_index=2):
     possible path
     """
     vertices = len(set([e[0] for e in edges]))
-    starting = choice(edges[0:random_index])
+    starting = choice([e for e in edges if e[2] >= edges[0][2] * cutoff])
     results, weight = starting[0:2], starting[2]
 
     while len(results) < vertices:
         # Loop until all vertices are added
         vertice = results[-1]
         possible = [e for e in [father.get(vertice)] + [mother.get(vertice)] if e]
-        if len(possible) < random_index:
-            # Add more edges if father and mother not possible or enough
-            for e in edges:
-                if e[0] == vertice and e[1] not in results:
-                    possible.append(e)
-                if len(possible) == random_index:
-                    break
         if len(possible) == 0:
-            # Should start another contig
+            # Pick possible edges with weight at least best * cutoff
+            possible = [e for e in edges
+                        if e[0] == vertice and e[1] not in results]
+            best = max([e[2] for e in possible])
+            possible = [e for e in possible if e[2] >= best * cutoff]
+        if len(possible) == 0:
+            # No possible edge found, should start another contig
             return results, weight, [e for e in edges
                                      if e[0] not in results
                                      and e[1] not in results]
         # Choose a random edges from possible ones
-        index = min([random_index, len(possible)])
-        edge = choice(possible[:index])
+        edge = choice(possible)
         results.append(edge[1])
         weight += edge[2]
 
@@ -47,7 +45,7 @@ def genetic(edges, father, mother, random_index=2):
     return results, weight, None
 
 
-def assemble(edges, father, mother, random_index=2):
+def assemble(edges, father, mother, cutoff=0.9):
     """
     Runs the assembly algorithm until all edges are added
     Returns contigs and the sum of all contigs' weights
@@ -56,7 +54,7 @@ def assemble(edges, father, mother, random_index=2):
     while edges is not None:  # Assemble all contigs
         path, weight, edges = genetic(
             sorted(edges, key=itemgetter(2), reverse=True),
-            father, mother, random_index)
+            father, mother, cutoff)
         paths.append((path, weight))
     return paths, sum([p[1] for p in paths])
 
