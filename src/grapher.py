@@ -3,9 +3,8 @@
     Grapher: Generate Multigraph for SCS from given reads
     Author: Paulo Viadanna
 """
-from Bio.SeqIO import parse
 from ctypes import cdll, c_char_p, c_int
-from sequencer import reverse_strip
+# from sequencer import reverse_strip
 import sys
 import argparse
 
@@ -29,8 +28,9 @@ def multi_graph(V):
 
 
 if __name__ == '__main__':
+    from Bio.SeqIO import parse
     parser = argparse.ArgumentParser(description='Builds the Multigraph')
-    parser.add_argument('Reads', type=unicode, nargs='?', default='-',
+    parser.add_argument('Reads', type=str, nargs='?', default='-',
                         help='Reference file or - for stdin')
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')

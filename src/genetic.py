@@ -70,7 +70,7 @@ def parents_dict(parents):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Genetic algorithm for SCS')
-    parser.add_argument('Edges', type=unicode, nargs='?', default='-',
+    parser.add_argument('Edges', type=str, nargs='?', default='-',
                         help='Edges file or - for stdin')
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('-g', dest='generations', action='store', type=int,
                         default=10, help='Number of generations')
     parser.add_argument('-v', dest='verbose', action='store_true',
-                        help='Be verbose')
+                        help='Be verbose about generated paths')
     args = parser.parse_args()
 
     if args.Edges == '-':

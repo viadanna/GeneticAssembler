@@ -3,8 +3,6 @@
     Sequencer: Splits given contigs into a number of fasta reads
     Author: Paulo Viadanna
 """
-from Bio.SeqIO import parse, write, SeqRecord
-from Bio.Seq import Seq
 from random import randint, choice
 import argparse
 import sys
@@ -13,27 +11,29 @@ base_pair = {'A': 'C', 'C': 'A', 'G': 'T', 'T': 'G'}
 
 
 def reverse_strip(x):
-    return Seq("".join([base_pair[b] for b in reversed(x)]))
+    return "".join([base_pair[b] for b in reversed(x)])
 
 
 def split_reads(seqs, min_size, max_size, coverage, error, reversals):
-    i, generated, target = 0, 0, sum([len(s.seq) for s in seqs]) * coverage
+    i, generated, target = 0, 0, sum([len(s) for s in seqs]) * coverage
     while generated < target:
-        seq = choice(seqs).seq
+        seq = choice(seqs)
         size = randint(min_size, max_size)
         start = randint(0, len(seq)-size)
         i += 1
         generated += size
         read = seq[start:start+size].upper()
         if reversals > 0 and randint(0, 99) < reversals:
-            read = Seq(reverse_strip(read))
+            read = reverse_strip(read)
         if error > 0:
-            read = Seq("".join((b if randint(0, 99) < error
-                else choice(('A', 'C', 'G', 'T', '')) for b in read)))
-        yield SeqRecord(read, 'fragment_%i' % i, '', '')
+            read = "".join([b if randint(0, 99) < error
+                else choice(('A', 'C', 'G', 'T', '')) for b in read])
+        yield read
 
 
 if __name__ == '__main__':
+    from Bio.SeqIO import parse, write, SeqRecord
+    from Bio.Seq import Seq
     parser = argparse.ArgumentParser(description='Splits a RefSeq into reads')
     parser.add_argument('RefSeq', type=unicode, nargs='?', default='-',
                         help='Reference file or - for stdin')
@@ -61,9 +61,14 @@ if __name__ == '__main__':
     else:
         g = open(args.output, 'wb')
 
-    seqs = list(parse(f, 'fasta'))
-    [write(r, g, "fasta") for r in split_reads(seqs, args.min_size,
-        args.max_size, args.coverage, args.error, args.rev)]
+    seqs = [str(s.seq) for s in parse(f, 'fasta')]
 
-    f.close()
-    g.close()
+    for i, fragment in enumerate(split_reads(seqs, args.min_size,
+                                             args.max_size, args.coverage,
+                                             args.error, args.rev)):
+        write(SeqRecord(Seq(fragment), 'fragment_%d' % i, '', ''), g, 'fasta')
+
+    if args.RefSeq != '-':
+        f.close()
+    if args.output != '-':
+        g.close()

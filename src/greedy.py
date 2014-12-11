@@ -8,7 +8,7 @@ import argparse
 import sys
 
 
-def greedly(edges):
+def greedy_assemble(edges):
     vertices = len(set([e[0] for e in edges]))
     results, weigth = edges[0][0:2], edges[0][2]
     while True:
@@ -31,6 +31,13 @@ def greedly(edges):
                                      and e[1] not in results]
 
 
+def greedly(edges):
+    while edges is not None:
+        path, weigth, edges = greedy_assemble(
+            sorted(edges, key=itemgetter(2), reverse=True))
+        yield (path, weigth)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Greedy algorithm for SCS')
     parser.add_argument('Edges', type=unicode, nargs='?', default='-',
@@ -49,14 +56,9 @@ if __name__ == '__main__':
     else:
         g = open(args.output, 'wb')
 
-    edges, paths = [map(int, e.split(' ')) for e in f.readlines()], []
+    edges = [map(int, e.split(' ')) for e in f.readlines()]
 
-    while edges is not None:
-        path, weigth, edges = greedly(
-            sorted(edges, key=itemgetter(2), reverse=True))
-        paths.append((path, weigth))
-
-    g.write(str(paths))
+    g.write(str([p for p in greedly(edges)]))
     g.write('\n')
 
     if args.Edges != '-':
