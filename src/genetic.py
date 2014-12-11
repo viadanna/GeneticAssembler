@@ -68,10 +68,34 @@ def parents_dict(parents):
     return father, mother
 
 
+def genetically(edges, kind='normal'):
+    father, mother, results = {}, {}, []
+    for gen in xrange(args.generations):
+        children = []
+        for _ in xrange(args.children):
+            child = assemble(edges, father, mother)
+            children.append(child)
+            verb("Generation %d child: %d\n" % (gen, child[1]))
+        results += children
+        if kind == 'normal':
+            children.sort(key=itemgetter(1), reverse=True)
+            father, mother = parents_dict(children)
+            fw, mw = children[0][1], children[1][1]
+        elif kind == 'best':
+            results.sort(key=itemgetter(1), reverse=True)
+            father, mother = parents_dict(results)
+            fw, mw = results[0][1], results[1][1]
+        verb("Generation %d parents: %d, %d\n" % (gen+1, fw, mw))
+    return sorted(results, key=itemgetter(1), reverse=True)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Genetic algorithm for SCS')
     parser.add_argument('Edges', type=str, nargs='?', default='-',
                         help='Edges file or - for stdin')
+    parser.add_argument('Kind', type=str, nargs='?', default='normal',
+                        help='Promiscuity level: normal (default) means only \
+                        same generation. best means only two best generated')
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')
     parser.add_argument('-c', dest='children', action='store', type=int,
@@ -101,23 +125,9 @@ if __name__ == '__main__':
         def verb(*args):
             pass
 
-    given_edges = [map(int, e.split(' ')) for e in f.readlines()]
-
-    father, mother, results = {}, {}, []
-    for gen in xrange(args.generations):
-        children = []
-        for _ in xrange(args.children):
-            child = assemble(given_edges[:], father, mother)
-            children.append(child)
-            verb("Generation %d child: %d\n" % (gen, child[1]))
-        children.sort(key=itemgetter(1), reverse=True)
-        father, mother = parents_dict(children)
-        results += children
-        verb("Generation %d parents: %d, %d\n" % (
-            gen+1, children[0][1], children[1][1]))
-
-    result = sorted(results, key=itemgetter(1), reverse=True)[0][0]
-    g.write(str(result))
+    edges = [map(int, e.split(' ')) for e in f.readlines()]
+    results = genetically(edges, args.Kind.lower())
+    g.write(str(results[0][0]))
     g.write('\n')
 
     if args.Edges != '-':
