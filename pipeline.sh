@@ -6,7 +6,7 @@ fi
 >&2 echo "Splitting Reference Genome into Reads"
 python src/sequencer.py -o reads.fasta < data/genome.fasta
 >&2 echo "Building Overlap Graph edges from Reads"
-./grapher < reads.fasta > reads.edges
+python src/grapher.py < reads.fasta > reads.edges
 >&2 echo "Building Hamiltonian path using greedy algorithm"
 python src/greedy.py < reads.edges
 >&2 echo "Building Hamiltonian path using genetic algorithm"
