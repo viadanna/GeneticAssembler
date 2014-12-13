@@ -4,15 +4,15 @@ CFLAGS = -O3 -Wall -fPIC
 
 .PHONY: default all clean
 
-default: pyeditdistance.so 
+default: pyeditdistance.so
 
-pyeditdistance.o: pyeditdistance.c
+src/pyeditdistance.o: src/pyeditdistance.c
 	$(CC) $(CFLAGS) -shared -c $< -o $@ -I/usr/include/python2.7
 
-pyeditdistance.so: pyeditdistance.o editdistance.o
+pyeditdistance.so: src/pyeditdistance.o src/editdistance.o
 	$(CC) -o $@ -shared $^ $(LIBS)
 
 clean:
-	-rm -f *.o
+	-rm -f src/*.o
 	-rm -f pyeditdistance.so
 
