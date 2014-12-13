@@ -3,3 +3,6 @@
 *.so
 reads.fasta
 reads.edges
+generated.fasta
+*.pyc
+grapher
