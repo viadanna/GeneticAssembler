@@ -10,7 +10,7 @@ import sys
 import argparse
 
 
-c_sp_align = cdll.LoadLibrary('./grapher').sp_align
+c_sp_align = cdll.LoadLibrary('./grapher.so').sp_align
 c_sp_align.argtypes = [c_char_p, c_char_p]
 c_sp_align.restype = c_int
 

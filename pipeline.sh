@@ -1,7 +1,7 @@
 #!/bin/bash
-if [ ! -f "grapher" ]; then
+if [ ! -f "grapher.so" ]; then
 	[ -z "$(which gcc)" ] && echo -e "Missing gcc in PATH" && exit 1
-	gcc -O2 src/grapher.c -o grapher
+	make
 fi
 
 SIZE="$1"
