@@ -3,6 +3,7 @@
     Sequencer: Splits given contigs into a number of fasta reads
     Author: Paulo Viadanna
 """
+from fasta import parse, write
 from random import randint, choice
 import argparse
 import sys
@@ -32,8 +33,6 @@ def split_reads(seqs, min_size, max_size, coverage, error, reversals):
 
 
 if __name__ == '__main__':
-    from Bio.SeqIO import parse, write, SeqRecord
-    from Bio.Seq import Seq
     parser = argparse.ArgumentParser(description='Splits a RefSeq into reads')
     parser.add_argument('RefSeq', type=unicode, nargs='?', default='-',
                         help='Reference file or - for stdin')
@@ -61,12 +60,12 @@ if __name__ == '__main__':
     else:
         g = open(args.output, 'wb')
 
-    seqs = [str(s.seq) for s in parse(f, 'fasta')]
+    seqs = [s for _, s in parse(f)]
 
     for i, fragment in enumerate(split_reads(seqs, args.min_size,
                                              args.max_size, args.coverage,
                                              args.error, args.rev)):
-        write(SeqRecord(Seq(fragment), 'fragment_%d' % i, '', ''), g, 'fasta')
+        write(fragment, 'fragment_%d' % i, g)
 
     if args.RefSeq != '-':
         f.close()

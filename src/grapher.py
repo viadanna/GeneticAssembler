@@ -4,6 +4,7 @@
     Author: Paulo Viadanna
 """
 from ctypes import cdll, c_char_p, c_int
+from fasta import parse
 # from sequencer import reverse_strip
 import sys
 import argparse
@@ -28,7 +29,6 @@ def multi_graph(V):
 
 
 if __name__ == '__main__':
-    from Bio.SeqIO import parse
     parser = argparse.ArgumentParser(description='Builds the Multigraph')
     parser.add_argument('Reads', type=str, nargs='?', default='-',
                         help='Reference file or - for stdin')
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     else:
         g = open(args.output, 'wb')
 
-    F = [str(s.seq) for s in parse(f, "fasta")]
+    F = [s for _, s in parse(f)]
     if args.rev:
         # TODO: Parse reverse strip fragments
         pass

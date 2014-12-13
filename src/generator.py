@@ -3,6 +3,7 @@
     Generator: Generates random genomes for experiments
     Author: Paulo Viadanna
 """
+from fasta import write
 from random import choice
 import argparse
 import sys
@@ -13,8 +14,6 @@ def generate_sequence(size, alphabet='ACGT'):
 
 
 if __name__ == '__main__':
-    from Bio.SeqIO import write, SeqRecord
-    from Bio.Seq import Seq
     parser = argparse.ArgumentParser(description='Generate random sequence')
     parser.add_argument('Size', type=int, nargs='?', default=1000,
                         help='Size of generated sequence')
@@ -23,5 +22,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     g = sys.stdout
-    write(SeqRecord(Seq(generate_sequence(args.Size, args.Alphabet)),
-                    'random_genome_size_%d' % args.Size, '', ''), g, 'fasta')
+    write(generate_sequence(args.Size, args.Alphabet),
+          'random_genome_size_%d' % args.Size, g)
