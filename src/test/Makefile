@@ -1,7 +1,6 @@
-TARGET = prog
 LIBS =
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -O3 -Wall
 
 .PHONY: default all clean
 

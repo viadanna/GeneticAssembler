@@ -19,9 +19,10 @@ static char max (char a, char b, char c)
    return ( ( max < c ) ? c : max );
 }
 
-int editdistance (char* a, int m, char* b, int n)
+int editdistance (char* a, size_t m, char* b, size_t n)
 {
     int i, j;
+    int result;
     /* a matrix allocated in linear form. We use M[i * m + j] to access line i
        and column j */
     m++;
@@ -46,6 +47,7 @@ int editdistance (char* a, int m, char* b, int n)
         }
     }
 
+    result = -1 * M[(n-1) * m + (m-1)];
 #ifdef DEBUG
     for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
@@ -57,5 +59,5 @@ int editdistance (char* a, int m, char* b, int n)
 
     free(M);
 
-    return -1 * M[(n-1) * m + (m-1)];
+    return result;
 }
