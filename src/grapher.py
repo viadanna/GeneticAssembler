@@ -15,16 +15,12 @@ c_sp_align.argtypes = [c_char_p, c_char_p]
 c_sp_align.restype = c_int
 
 
-def sp_align(a, b):
-    return c_sp_align(c_char_p(a), c_char_p(b))
-
-
 def multi_graph(V):
-    for i, f in enumerate(F):
-        for j, f_linha in enumerate(F):
+    for i, a in enumerate(F):
+        for j, b in enumerate(F):
             if i == j:
                 continue
-            t = sp_align(f, f_linha)
+            t = c_sp_align(c_char_p(a), c_char_p(b))
             yield (i, j, t)
 
 

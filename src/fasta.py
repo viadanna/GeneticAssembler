@@ -1,9 +1,16 @@
+"""
+    Fasta: Quick fasta file reader/writer
+    Author: Paulo Viadanna
+"""
+
+
 def parse(f):
     name, seq = None, ''
     for line in f.readlines():
         if line.startswith('>'):
             if name:
                 yield name, seq
+                seq = ''
             name = line.strip('\n')[1:]
         else:
             seq += line.strip('\n')
@@ -18,4 +25,3 @@ def write(seq, name, f):
         i += 80
     if len(seq) > i:
         f.write('%s\n' % seq[i:])
-
