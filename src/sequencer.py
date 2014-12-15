@@ -8,7 +8,7 @@ from random import randint, choice
 import argparse
 import sys
 
-base_pair = {'A': 'C', 'C': 'A', 'G': 'T', 'T': 'G'}
+base_pair = {'A': 'T', 'C': 'T', 'G': 'C', 'C': 'G'}
 
 
 def reverse_strip(x):
@@ -38,9 +38,9 @@ if __name__ == '__main__':
                         help='Reference file or - for stdin')
     parser.add_argument('-o', dest='output', action='store', default='-',
                         help='Output fasta or - for stdout')
-    parser.add_argument('--min', dest='min_size', action='store', default=800,
+    parser.add_argument('--min', dest='min_size', action='store', default=25,
                         type=int, help='Minimum read length')
-    parser.add_argument('--max', dest='max_size', action='store', default=900,
+    parser.add_argument('--max', dest='max_size', action='store', default=100,
                         type=int, help='Maximum read length')
     parser.add_argument('--coverage', type=float, action='store', default=11,
                         help='Desired coverage of given RefSeq')
