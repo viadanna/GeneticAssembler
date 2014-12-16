@@ -1,7 +1,6 @@
 package biocomp
 
 import (
-	"log"
 	"math/rand"
 )
 
@@ -104,9 +103,6 @@ func (ss Sequences) BuildOverlapEdges(err float64, reversed bool) Edges {
 				}
 				edge := Edge{i, j, ss[i].OverlapScore(ss[j], err)}
 				es = append(es, &edge)
-				if edge.S > 5 {
-					log.Println(edge)
-				}
 			}
 		}
 	}

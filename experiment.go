@@ -50,6 +50,7 @@ func main() {
 
 	genome := GenerateDNA(*LEN)
 	log.Println("Generated Genome")
+	log.Println(genome)
 	fragments := genome.Fragmentize(*MIN_SIZE, *MAX_SIZE, *COVERAGE, *SEQ_ERR, *SEQ_REV)
 	log.Println("Generated Fragments")
 	edges := fragments.BuildOverlapEdges(*ERR, *SEQ_REV > 0)
@@ -62,10 +63,16 @@ func main() {
 	// Run naive greedy algorithm
 	naiveEdges := fragments.BuildOverlapEdges(0, false)
 	naiveMap := naiveEdges.BuildEdgesMap()
-	fmt.Println("Naive Greedy Score:", Greedy(naiveEdges, naiveMap, len(*fragments)).Score)
+	naivePath := Greedy(naiveEdges, naiveMap, len(*fragments))
+	fmt.Println("Naive Greedy Score:", naivePath.Score)
+	fmt.Println("Naive Assembly:", naivePath.GenomeAssembly(*fragments))
 	// Run greedy algorithm with error and reversals
-	fmt.Println("Greedy Score:", Greedy(edges, edgesMap, len(*fragments)).Score)
+	greedyPath := Greedy(edges, edgesMap, len(*fragments))
+	fmt.Println("Greedy Score:", greedyPath.Score)
+	fmt.Println("Greedy Assembly:", greedyPath.GenomeAssembly(*fragments))
 	// Run genetic algorithm
-	Genetic(edges, edgesMap, len(*fragments), *CUTOFF, *GEN, *CHILD)
+	geneticPath := Genetic(edges, edgesMap, len(*fragments), *CUTOFF, *GEN, *CHILD)[0]
+	fmt.Println("Genetic Score:", geneticPath.Score)
+	fmt.Println("Genetic Assembly:", geneticPath.GenomeAssembly(*fragments))
 	// fmt.Println(paths)
 }

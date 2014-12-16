@@ -9,6 +9,23 @@ import (
 type Parent map[int]*Edge
 type Parents [2]Parent
 
+func (path Path) GenomeAssembly(fragments Sequences) (genome string) {
+	first := path.Edges[0].A
+	if first < 0 {
+		genome = string(fragments[Abs(first)].ReverseComplement())
+	} else {
+		genome = string(fragments[first])
+	}
+	for _, edge := range path.Edges {
+		if edge.B < 0 {
+			genome = fmt.Sprintf("%s%s", genome, fragments[Abs(edge.B)][edge.S:].ReverseComplement())
+		} else {
+			genome = fmt.Sprintf("%s%s", genome, fragments[edge.B][edge.S:])
+		}
+	}
+	return genome
+}
+
 func GeneticAssembly(edges Edges, edgesMap map[int]Edges, vertices int, parents Parents, cutoff int) (path Path) {
 	choice, err := edges.Pick(cutoff, Edges{})
 	if err != nil {
@@ -59,7 +76,6 @@ func Greedy(edges Edges, edgesMap map[int]Edges, vertices int) Path {
 		for _, next := range edgesMap[last.B] {
 			if !(p.Contains(next.B)) {
 				p.AddEdge(next)
-				fmt.Println(next)
 				break
 			}
 		}
@@ -76,7 +92,6 @@ func Genetic(edges Edges, edgesMap map[int]Edges, vertices int, cutoff, generati
 		// Generate a number of children per generation
 		for c := 0; c < len(children); c++ {
 			children[c] = GeneticAssembly(edges, edgesMap, vertices, parents, cutoff)
-			fmt.Println("Genetic Score:", children[c].Score)
 		}
 		// Get best children as parents for next generation
 		sort.Sort(children)
