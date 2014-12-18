@@ -34,27 +34,35 @@ type Experiment struct {
 	GreedyAssembly     string
 	GreedyLength       int
 	GreedyScore        int
+	GreedyDistance     int
 	GreedyPlusAssembly string
 	GreedyPlusLength   int
 	GreedyPlusScore    int
+	GreedyPlusDistance int
 	GeneticAssembly    string
 	GeneticLength      int
 	GeneticScore       int
+	GeneticDistance    int
 	RandomAssembly     string
 	RandomLength       int
 	RandomScore        int
+	RandomDistance     int
 }
 
 type Results struct {
-	Experiments          []Experiment
-	GreedyMeanLength     int
-	GreedyMeanScore      int
-	GreedyPlusMeanLength int
-	GreedyPlusMeanScore  int
-	GeneticMeanLength    int
-	GeneticMeanScore     int
-	RandomMeanLength     int
-	RandomMeanScore      int
+	Experiments            []Experiment
+	GreedyMeanLength       int
+	GreedyMeanScore        int
+	GreedyMeanDistance     int
+	GreedyPlusMeanLength   int
+	GreedyPlusMeanScore    int
+	GreedyPlusMeanDistance int
+	GeneticMeanLength      int
+	GeneticMeanScore       int
+	GeneticMeanDistance    int
+	RandomMeanLength       int
+	RandomMeanScore        int
+	RandomMeanDistance     int
 }
 
 func RunExperiment(length, min, max, gen, child, cutoff int, coverage, seqErr, seqRev, errorRate float64) Experiment {
@@ -72,6 +80,7 @@ func RunExperiment(length, min, max, gen, child, cutoff int, coverage, seqErr, s
 		e.GreedyScore = naivePath.Score
 		e.GreedyAssembly = naivePath.GenomeAssembly(*fragments)
 		e.GreedyLength = len(e.GreedyAssembly)
+		e.GreedyDistance = EditDistance(string(e.RefGenome), e.GreedyAssembly)
 	}
 
 	// Run greedy algorithm with error and reversals
@@ -79,18 +88,21 @@ func RunExperiment(length, min, max, gen, child, cutoff int, coverage, seqErr, s
 	e.GreedyPlusScore = greedyPath.Score
 	e.GreedyPlusAssembly = greedyPath.GenomeAssembly(*fragments)
 	e.GreedyPlusLength = len(e.GreedyPlusAssembly)
+	e.GreedyPlusDistance = EditDistance(string(e.RefGenome), e.GreedyPlusAssembly)
 
 	// Run genetic algorithm
 	geneticPath := Genetic(edges, edgesMap, len(*fragments), cutoff, gen, child)[0]
 	e.GeneticScore = geneticPath.Score
 	e.GeneticAssembly = geneticPath.GenomeAssembly(*fragments)
 	e.GeneticLength = len(e.GeneticAssembly)
+	e.GeneticDistance = EditDistance(string(e.RefGenome), e.GeneticAssembly)
 
 	// Run genetic algorithm without parents
 	randomPath := Genetic(edges, edgesMap, len(*fragments), cutoff, 1, gen*child)[0]
 	e.RandomScore = randomPath.Score
 	e.RandomAssembly = randomPath.GenomeAssembly(*fragments)
 	e.RandomLength = len(e.RandomAssembly)
+	e.RandomDistance = EditDistance(string(e.RefGenome), e.RandomAssembly)
 
 	return e
 }
@@ -138,6 +150,10 @@ func main() {
 		results.GreedyMeanScore += results.Experiments[i].GreedyScore
 		results.GreedyPlusMeanScore += results.Experiments[i].GreedyPlusScore
 		results.RandomMeanScore += results.Experiments[i].RandomScore
+		results.GeneticMeanDistance += results.Experiments[i].GeneticDistance
+		results.GreedyMeanDistance += results.Experiments[i].GreedyDistance
+		results.GreedyPlusMeanDistance += results.Experiments[i].GreedyPlusDistance
+		results.RandomMeanDistance += results.Experiments[i].RandomDistance
 	}
 	results.GeneticMeanLength /= *RUNS
 	results.GreedyMeanLength /= *RUNS
@@ -147,6 +163,10 @@ func main() {
 	results.GreedyMeanScore /= *RUNS
 	results.GreedyPlusMeanScore /= *RUNS
 	results.RandomMeanScore /= *RUNS
+	results.GeneticMeanDistance /= *RUNS
+	results.GreedyMeanDistance /= *RUNS
+	results.GreedyPlusMeanDistance /= *RUNS
+	results.RandomMeanDistance /= *RUNS
 	out, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
 	}
