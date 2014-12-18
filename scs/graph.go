@@ -19,8 +19,9 @@ func Abs(n int) int {
 }
 
 func (p *Path) Contains(vertice int) bool {
-	for _, edge := range p.Edges {
-		if Abs(edge.B) == Abs(vertice) {
+	last := len(p.Edges) - 1
+	for i, edge := range p.Edges {
+		if Abs(edge.B) == Abs(vertice) || (i != last && Abs(edge.A) == Abs(vertice)) {
 			return true
 		}
 	}

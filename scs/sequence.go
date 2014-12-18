@@ -2,6 +2,7 @@ package biocomp
 
 import (
 	"math/rand"
+	"sort"
 )
 
 type Sequence string
@@ -38,6 +39,7 @@ func (s Sequence) ReverseComplement() Sequence {
 func (s Sequence) Fragmentize(minSize, maxSize int, coverage float64, err float64, reverse float64) *Sequences {
 	bases, target := 0, int(coverage*float64(len(s)))
 	fragments := make(Sequences, 0, 2*target/(minSize+maxSize))
+	maxSize++
 	for bases < target {
 		// Pick random fragment
 		size := rand.Intn(maxSize-minSize) + minSize
@@ -67,45 +69,80 @@ func (s Sequence) Fragmentize(minSize, maxSize int, coverage float64, err float6
 func (s Sequence) OverlapScore(t Sequence, err float64) int {
 	ls, lt := len(s), len(t)
 	score, mismatch := 0, 0
-	for i := 1; i < ls && i < lt; i++ {
+	for i := ls - 1; i >= 0; i-- {
 		mismatch = 0
-		for j := 0; j < i; j++ {
-			if s[ls-j-1] != t[j] {
+		for j := 0; j+i < ls && j < lt; j++ {
+			if s[i+j] != t[j] { // Suffix-prefix matching
 				mismatch++
 			}
 		}
-		if float64(mismatch)/float64(i) <= err {
-			score = i
+		if float64(mismatch)/float64(ls-i)-err < 1E-4 { // floating point error considered
+			if ls-i >= lt { // s contains t
+				return -1
+			}
+			score = ls - i
 		}
 	}
 	return score
 }
 
-func (ss Sequences) BuildOverlapEdges(err float64, reversed bool) Edges {
+func (frags *Sequences) BuildOverlapEdges(err float64, reversed bool) Edges {
+	ss := *frags
 	es := make(Edges, 0, len(ss))
-	if reversed {
-		for i := range ss {
-			for j := range ss {
-				if i == j {
-					continue
-				}
-				es = append(es, &Edge{i, j, ss[i].OverlapScore(ss[j], err)})
-				es = append(es, &Edge{i, -j, ss[i].OverlapScore(ss[j].ReverseComplement(), err)})
-				es = append(es, &Edge{-i, j, ss[i].ReverseComplement().OverlapScore(ss[j], err)})
-				es = append(es, &Edge{-i, -j, ss[i].ReverseComplement().OverlapScore(ss[j].ReverseComplement(), err)})
+	ignore := make([]int, 0)
+	for i := range ss {
+		for j := range ss {
+			if i == j {
+				continue
 			}
-		}
-	} else {
-		for i := range ss {
-			for j := range ss {
-				if i == j {
-					continue
+			if reversed {
+				if score := ss[i].OverlapScore(ss[j], err); score >= 0 {
+					es = append(es, &Edge{i, j, score})
+				} else {
+					ignore = append(ignore, j)
 				}
-				edge := Edge{i, j, ss[i].OverlapScore(ss[j], err)}
-				es = append(es, &edge)
+				if score := ss[i].OverlapScore(ss[j].ReverseComplement(), err); score >= 0 {
+					es = append(es, &Edge{i, -j, score})
+				} else {
+					ignore = append(ignore, j)
+				}
+				if score := ss[i].ReverseComplement().OverlapScore(ss[j], err); score >= 0 {
+					es = append(es, &Edge{-i, j, score})
+				} else {
+					ignore = append(ignore, j)
+				}
+				if score := ss[i].ReverseComplement().OverlapScore(ss[j].ReverseComplement(), err); score >= 0 {
+					es = append(es, &Edge{-i, -j, score})
+				} else {
+					ignore = append(ignore, j)
+				}
+			} else {
+				if score := ss[i].OverlapScore(ss[j], err); score >= 0 {
+					es = append(es, &Edge{i, j, ss[i].OverlapScore(ss[j], err)})
+				} else {
+					ignore = append(ignore, j)
+				}
 			}
 		}
 	}
+	if len(ignore) > 0 {
+		newFrags := make(Sequences, 0)
+		for i := 0; i < len(ss); i++ {
+			ign := false
+			for _, ignored := range ignore {
+				if i == ignored {
+					ign = true
+					break
+				}
+			}
+			if !(ign) {
+				newFrags = append(newFrags, ss[i])
+			}
+		}
+		*frags = newFrags
+		return frags.BuildOverlapEdges(err, reversed)
+	}
+	sort.Sort(es)
 	return es
 }
 

@@ -18,7 +18,7 @@ func (path Path) GenomeAssembly(fragments Sequences) (genome string) {
 	}
 	for _, edge := range path.Edges {
 		if edge.B < 0 {
-			genome = fmt.Sprintf("%s%s", genome, fragments[Abs(edge.B)][edge.S:].ReverseComplement())
+			genome = fmt.Sprintf("%s%s", genome, fragments[Abs(edge.B)].ReverseComplement()[edge.S:])
 		} else {
 			genome = fmt.Sprintf("%s%s", genome, fragments[edge.B][edge.S:])
 		}
@@ -70,7 +70,7 @@ func Greedy(edges Edges, edgesMap map[int]Edges, vertices int) Path {
 	// Consider edges already sorted by reverse score
 	p := Path{Edges{edges[0]}, edges[0].S} // Start with highest weight
 	// Run until all veritices are added
-	for len(p.Edges) < vertices {
+	for len(p.Edges) < vertices-1 {
 		last := p.Edges[len(p.Edges)-1]
 		// Find best possible edge and add to graph
 		for _, next := range edgesMap[last.B] {
