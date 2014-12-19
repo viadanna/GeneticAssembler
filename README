@@ -1,3 +1,34 @@
 # Biocomp #
 
 Bem vindo ao projeto de MO640, siga as instruções para executar o programa.
+
+Rode em um shell ou terminal o executável correspondente à arquitetura do seu sistema.
+
+O programa aceita os seguintes argumentos:
+
+
+"-runs": Número de vezes que o algoritmo completo será executado numa chamada do programa. Por padrão, definido para "-runs=10";
+
+"-genome": Tamanho do genoma que será gerado. Por padrão, definido para "-genome=1000";
+
+"-min": Tamanho minimo dos fragmentos gerados. Por padrão, definido apara "-min=25";
+
+"-max": Tamanho máximo dos fragmentos gerados. Por padrão, definido apara "-max=100";
+
+"-coverage": Fração de cobertura dos fragmentos gerados à sequência original. Por padrão, definido para "-coverage=1";
+
+"-seqerror": Fração de fragmentos gerados que terão erros. Por padrão, definido para "-seqerror=0.01";
+
+"-seqrev": Fração de fragmentos gerados que terão reversões. Por padrão, definido para "-seqrev=0.5";
+
+"-error": Taxa de erro aceita no cálculo das bordas de overlap. Por padrão, definido para "-error=0.1";
+
+"-gen": número de gerações iteradas no algoritmo genético. Por padrão, definido para "-gen=10";
+
+"-child": Número de filhos por geração no algoritmo genético. Por padrão, definido para "-child=10";
+
+"-cutoff": Porcentagem da pontuação máxima existente que será aceita no algoritmo genético para que uma borda possa ser escolhida e adicionada num caminho. Por padrão, definido para "-cutoff=90";
+
+"-mp": Rodar algoritmos em paralelo. Por padrão, definido para: '-mp=true';
+
+
