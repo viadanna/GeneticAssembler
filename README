@@ -4,8 +4,9 @@ Bem vindo ao projeto de MO640, siga as instruções para executar o programa.
 
 Rode em um shell ou terminal o executável correspondente à arquitetura do seu sistema.
 
-O programa aceita os seguintes argumentos:
+=======================================================================================
 
+O programa aceita os seguintes argumentos:
 
 "-runs": Número de vezes que o algoritmo completo será executado numa chamada do programa. Por padrão, definido para "-runs=10";
 
@@ -31,4 +32,80 @@ O programa aceita os seguintes argumentos:
 
 "-mp": Rodar algoritmos em paralelo. Por padrão, definido para: '-mp=true';
 
+==========================================================================================
 
+O programa retorna um JSON no seguinte formato:
+
+{
+  "Experiments": [
+    {
+      "RefGenome": "{...}",
+      "RefLength": x,
+      "GreedyAssembly": "{...}",
+      "GreedyLength": x,
+      "GreedyScore": x,
+      "GreedyDistance": x,
+      "GreedyPlusAssembly": "{...}",
+      "GreedyPlusLength": x,
+      "GreedyPlusScore": x,
+      "GreedyPlusDistance": x,
+      "GeneticAssembly": "{...}",
+      "GeneticLength": x,
+      "GeneticScore": x,
+      "GeneticDistance": x,
+      "RandomAssembly": "{...}",
+      "RandomLength": x,
+      "RandomScore": x,
+      "RandomDistance": x
+    }
+  ],
+  "GreedyMeanLength": x,
+  "GreedyMeanScore": x,
+  "GreedyMeanDistance": x,
+  "GreedyPlusMeanLength": x,
+  "GreedyPlusMeanScore": x,
+  "GreedyPlusMeanDistance": x,
+  "GeneticMeanLength": x,
+  "GeneticMeanScore": x,
+  "GeneticMeanDistance": x,
+  "RandomMeanLength": x,
+  "RandomMeanScore": x,
+  "RandomMeanDistance": x
+}
+
+Os campos desse retorno significam:
+
+"Experiments": O resultado da execução de uma instância completa do algoritmo.
+	[
+      "RefGenome": O genoma original, gerado pelo programa, que foi utilizado nessa instância de execução do algoritmo
+      "RefLength": Comprimento do genoma original
+      "GreedyAssembly": Montagem feita pelo algoritmo guloso ingênuo (sem mismatches e reversões)
+      "GreedyLength": Comprimento da montagem feita pelo algoritmo guloso ingênuo,
+      "GreedyScore": Pontuação da montagem feita pelo algoritmo guloso ingênuo,
+      "GreedyDistance": Distância da montagem feita pelo algoritmo guloso ingênuo ao genoma original,
+      "GreedyPlusAssembly": Montagem feita pelo algoritmo guloso considerando mismatches e reversões,
+      "GreedyPlusLength": Comprimento da montagem feita pelo algoritmo guloso considerando mismatches e reversões,
+      "GreedyPlusScore": Pontuação da montagem feita pelo algoritmo guloso considerando mismatches e reversões,
+      "GreedyPlusDistance": Distância da montagem feita pelo algoritmo guloso considerando mismatches e reversões ao genoma original,
+      "GeneticAssembly": Montagem feita pelo algoritmo genético,
+      "GeneticLength": Comprimento da montagem feita pelo algoritmo genético,
+      "GeneticScore": Pontuação da montagem feita pelo algoritmo genético,
+      "GeneticDistance": Distância da montagem feita pelo algoritmo genético,
+      "RandomAssembly": Montagem feita pelo algoritmo random
+      "RandomLength": Comprimento da montagem feita pelo algoritmo random,
+      "RandomScore": Pontuação da montagem feita pelo algoritmo random,
+      "RandomDistance": Distância da montagem feita pelo algoritmo random
+  ],
+
+  "GreedyMeanLength": Média do comprimento das montagens feitas pelo algoritmo guloso ingênuo,
+  "GreedyMeanScore": Média da pontuação das montagens feitas pelo algoritmo guloso ingênuo,
+  "GreedyMeanDistance": Média da distância das montagens feitas pelo algoritmo guloso ingênuo ao genoma original,
+  "GreedyPlusMeanLength": Média do comprimento das montagens feitas pelo algoritmo guloso considerando mismatches e reversõe,
+  "GreedyPlusMeanScore": Média da pontuação das montagens feitas pelo algoritmo guloso considerando mismatches e reversões,
+  "GreedyPlusMeanDistance": Média da distância das montagens feitas pelo algoritmo guloso considerando mismatches e reversões ao genoma original,
+  "GeneticMeanLength": Média do comprimento das montagens feitas pelo algoritmo genético,
+  "GeneticMeanScore": Média da pontuação das montagens feitas pelo algoritmo genético,
+  "GeneticMeanDistance": Média da distância das montagens feitas pelo algoritmo genético,
+  "RandomMeanLength": Média do comprimento das montagens feitas pelo algoritmo random,
+  "RandomMeanScore": Média da pontuação das montagens feitas pelo algoritmo random,
+  "RandomMeanDistance": Média da distância das montagens feitas pelo algoritmo random
